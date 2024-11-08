@@ -16,7 +16,7 @@
         <activity
             android:name=".PicActivity"
             android:exported="false"
-            android:label="@string/title_activity_pic"
+            android:label="Картинка"
             android:theme="@style/Theme.LabAndroid6" />
         <activity
             android:name=".MainActivity"
