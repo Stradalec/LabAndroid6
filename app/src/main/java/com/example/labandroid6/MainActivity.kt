@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
@@ -13,14 +14,21 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        Timber.plant(Timber.DebugTree())
+
+        Timber.d("Start")
         val  showPictureButton: Button = findViewById(R.id.btn_show_pic)
 
+        val url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwRgAxpivszzF5Ib7Xe_wMZWhmg4xWidvZwQ&s"
+        Timber.d(url)
         showPictureButton.setOnClickListener(){
-            val intent = Intent(
+            val intent =  Intent(
                 this,
                 PicActivity::class.java
-            )
-            intent.putExtra("linkToPicture,","[https://farm66.staticflickr.com/65535/54121573517_d6659baa91_z.jpg")
+            ).apply {
+                putExtra("linkToPicture",url)
+            }
+
 
             startActivity(intent)
 

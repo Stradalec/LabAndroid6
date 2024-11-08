@@ -51,6 +51,7 @@ android {
 
 dependencies {
 
+    implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation(libs.androidx.core.ktx)
