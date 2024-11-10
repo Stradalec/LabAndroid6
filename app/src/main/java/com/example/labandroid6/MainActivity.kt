@@ -4,6 +4,7 @@ import android.R.attr.data
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val list = ParsePhotos("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ff49fcd4d4a08aa6aafb6ea3de826464&tags=cat&format=json&nojsoncallback=1")
             withContext(Dispatchers.Main){
-                displayImageList(list)
+                displayImageList(list, this@MainActivity)
             }
         }
 
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         return photoLinks
     }
 
-    private fun displayImageList( imageUrlList: List<String>) {
+    private fun displayImageList (imageUrlList: List<String>, context: Context) {
         val recyclerView: RecyclerView = findViewById(R.id.rView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = MyAdapter(imageUrlList) { url ->
@@ -100,6 +101,8 @@ class MainActivity : AppCompatActivity() {
             val clip = ClipData.newPlainText("copied", url)
             clipboard.setPrimaryClip(clip)
             Timber.i(url)
+            val pictureIntent = Intent(context, PicViewer::class.java).apply { putExtra("linkToPicture", url) }
+            startActivity(pictureIntent)
         }
     }
 }
