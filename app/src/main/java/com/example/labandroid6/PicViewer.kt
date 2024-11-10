@@ -36,7 +36,6 @@ class PicViewer : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_item_favorite -> {
-                // реализация порядка действий для выбранного элемента
                 Toast.makeText(this, "Избранное", Toast.LENGTH_SHORT).show()
                 return true
             }
