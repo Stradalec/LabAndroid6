@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LabAndroid6</string>
+    <string name="favorite">Избранное</string>
 </resources>
