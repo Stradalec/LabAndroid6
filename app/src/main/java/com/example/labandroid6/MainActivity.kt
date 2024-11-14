@@ -1,21 +1,10 @@
 package com.example.labandroid6
 
-import android.R.attr.data
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -25,44 +14,37 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
-import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
 
-    private  lateinit var  adapter: MyAdapter
+    private var  adapter = MyAdapter(emptyList()) {
+        startNewActivity(it)
+    }
+
+    private fun startNewActivity(url: String) {
+        val pictureIntent = Intent(this, PicViewer::class.java).apply { putExtra("linkToPicture", url) }
+        startActivity(pictureIntent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.plant(Timber.DebugTree())
 
-        adapter = MyAdapter(emptyList()){ url ->
-            val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("copied", url)
-            clipboard.setPrimaryClip(clip)
-            Timber.i(url)
-        }
-
         val recyclerView: RecyclerView = findViewById(R.id.rView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = adapter
         CoroutineScope(Dispatchers.IO).launch {
-            val list = ParsePhotos("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ff49fcd4d4a08aa6aafb6ea3de826464&tags=cat&format=json&nojsoncallback=1")
+            val list = parsePhotos("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ff49fcd4d4a08aa6aafb6ea3de826464&tags=cat&format=json&nojsoncallback=1")
             withContext(Dispatchers.Main){
-                displayImageList(list, this@MainActivity)
+                adapter.updateList(list)
             }
         }
-
-
-
-
-
-
     }
 
 
-    private fun ParsePhotos(inputUrl: String): List<String> {
+    private fun parsePhotos(inputUrl: String): List<String> {
         val client = OkHttpClient()
         var photoLinks: List<String> = listOf("1")
         val request = Request.Builder()
@@ -91,18 +73,5 @@ class MainActivity : AppCompatActivity() {
 
         }
         return photoLinks
-    }
-
-    private fun displayImageList (imageUrlList: List<String>, context: Context) {
-        val recyclerView: RecyclerView = findViewById(R.id.rView)
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
-        recyclerView.adapter = MyAdapter(imageUrlList) { url ->
-            val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("copied", url)
-            clipboard.setPrimaryClip(clip)
-            Timber.i(url)
-            val pictureIntent = Intent(context, PicViewer::class.java).apply { putExtra("linkToPicture", url) }
-            startActivity(pictureIntent)
-        }
     }
 }
